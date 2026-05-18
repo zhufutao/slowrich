@@ -193,7 +193,7 @@ export function setAuthCookies(
 ) {
   const isDev = c.env.ENVIRONMENT === 'development';
   const secureFlag = isDev ? '' : '; Secure';
-  const sameSite = isDev ? 'Lax' : 'Strict';
+  const sameSite = isDev ? 'Lax' : 'None';
 
   // AccessToken: 30分钟, Path=/api
   c.header('Set-Cookie', [
@@ -208,10 +208,11 @@ export function setAuthCookies(
 export function clearAuthCookies(c: Context<{ Bindings: Env }>) {
   const isDev = c.env.ENVIRONMENT === 'development';
   const secureFlag = isDev ? '' : '; Secure';
+  const sameSite = isDev ? 'Lax' : 'None';
 
   c.header('Set-Cookie', [
-    `access_token=; HttpOnly;${secureFlag}; Path=/api; Max-Age=0`,
-    `refresh_token=; HttpOnly;${secureFlag}; Path=/api/auth/refresh; Max-Age=0`,
+    `access_token=; HttpOnly;${secureFlag}; SameSite=${sameSite}; Path=/api; Max-Age=0`,
+    `refresh_token=; HttpOnly;${secureFlag}; SameSite=${sameSite}; Path=/api/auth/refresh; Max-Age=0`,
   ].join(', '));
 }
 

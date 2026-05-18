@@ -37,7 +37,7 @@ async function request<T>(
     throw new ApiError(data.code, '登录已过期，请重新登录');
   }
 
-  if (data.code !== 0) {
+  if (data.code !== 0 && data.code !== 20006) {
     throw new ApiError(data.code, data.message);
   }
 

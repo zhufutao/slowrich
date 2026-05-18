@@ -28,10 +28,11 @@ export default function LoginPage() {
     if (!validate()) return;
     try {
       const user = await login(email, password);
-      showToast('登录成功', 'success');
       if (user.must_change_password) {
+        showToast('请修改初始密码', 'info');
         navigate('/change-password');
       } else {
+        showToast('登录成功', 'success');
         navigate('/');
       }
     } catch {

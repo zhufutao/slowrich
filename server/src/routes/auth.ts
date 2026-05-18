@@ -56,7 +56,7 @@ auth.post('/login', loginLimiter, async (c) => {
     c.env.JWT_SECRET, c.env.REFRESH_TOKEN_SECRET
   );
 
-  if (result.code !== 0) {
+  if (result.code !== 0 && result.code !== 20006) {
     const status = result.code === 20004 ? 401 : 403;
     return c.json(result, status);
   }

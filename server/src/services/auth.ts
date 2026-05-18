@@ -19,61 +19,31 @@ import {
 // 生产环境建议使用 @noble/hashes 或 bcryptjs (nodejs_compat)
 
 /**
- * 密码哈希 - 使用PBKDF2（Workers兼容）
+ * 密码哈希 - 使用SHA-256+salt（Workers兼容，快速）
  */
 export async function hashPassword(password: string): Promise<string> {
+  const saltBytes = crypto.getRandomValues(new Uint8Array(16));
+  const salt = Array.from(saltBytes).map(b => b.toString(16).padStart(2, '0')).join('');
   const encoder = new TextEncoder();
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const saltB64 = btoa(String.fromCharCode(...salt));
-
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
-  );
-
-  const derivedBits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-    keyMaterial, 256
-  );
-
-  const hashB64 = btoa(String.fromCharCode(...new Uint8Array(derivedBits)));
-  return `pbkdf2:100000:${saltB64}:${hashB64}`;
+  const data = encoder.encode(salt + ':' + password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return `sha256:${salt}:${hash}`;
 }
 
 /**
  * 验证密码
  */
 export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
-  // 兼容bcrypt格式（seed数据）和PBKDF2格式
-  if (storedHash.startsWith('$2a$') || storedHash.startsWith('$2b$')) {
-    // bcrypt格式 - 使用bcryptjs
-    try {
-      const bcrypt = await import('bcryptjs');
-      return bcrypt.compareSync(password, storedHash);
-    } catch {
-      // 如果bcryptjs不可用，尝试直接比较（仅开发环境）
-      return false;
-    }
-  }
-
-  if (storedHash.startsWith('pbkdf2:')) {
+  if (storedHash.startsWith('sha256:')) {
     const parts = storedHash.split(':');
-    if (parts.length !== 4) return false;
-
-    const [, iterations, saltB64, expectedHashB64] = parts;
-    const salt = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
+    if (parts.length !== 3) return false;
+    const [, salt, expectedHash] = parts;
     const encoder = new TextEncoder();
-
-    const keyMaterial = await crypto.subtle.importKey(
-      'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
-    );
-
-    const derivedBits = await crypto.subtle.deriveBits(
-      { name: 'PBKDF2', salt, iterations: parseInt(iterations), hash: 'SHA-256' },
-      keyMaterial, 256
-    );
-
-    const actualHashB64 = btoa(String.fromCharCode(...new Uint8Array(derivedBits)));
-    return actualHashB64 === expectedHashB64;
+    const data = encoder.encode(salt + ':' + password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const actualHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    return actualHash === expectedHash;
   }
 
   return false;

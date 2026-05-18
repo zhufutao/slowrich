@@ -37,11 +37,9 @@ crons = ["30 15 * * 1-5"]
 # ============================================
 [vars]
 ENVIRONMENT = "production"
-JWT_SECRET = ""             # Use: wrangler secret put JWT_SECRET
-REFRESH_TOKEN_SECRET = ""   # Use: wrangler secret put REFRESH_TOKEN_SECRET
-TUSHARE_TOKEN = ""          # Use: wrangler secret put TUSHARE_TOKEN
-CSRF_SECRET = ""            # Use: wrangler secret put CSRF_SECRET
 FRONTEND_URL = "https://slowerich.pages.dev"
+# Secrets (set via: wrangler secret put <NAME>)
+# JWT_SECRET, REFRESH_TOKEN_SECRET, CSRF_SECRET, TUSHARE_TOKEN
 
 # ============================================
 # Dev overrides

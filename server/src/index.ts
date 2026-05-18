@@ -43,6 +43,7 @@ app.use('/api/*', async (c, next) => {
     },
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+    exposeHeaders: ['Set-Cookie'],
     credentials: true,
     maxAge: 86400,
   });

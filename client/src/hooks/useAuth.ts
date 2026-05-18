@@ -14,11 +14,11 @@ export function useAuth() {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.post<{ user: User; token: string }>('/auth/login', { email, password });
+      const data = await api.post<{ user: User; must_change_password?: boolean }>('/auth/login', { email, password });
       // Cookie-based: token set by backend Set-Cookie
       setUser(data.user);
       setUserState(data.user);
-      return data.user;
+      return { ...data.user, must_change_password: data.must_change_password } as User & { must_change_password: boolean };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '登录失败';
       setError(msg);
