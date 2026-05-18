@@ -1,0 +1,24 @@
+{
+  "name": "slowerich-backend",
+  "version": "1.0.0",
+  "description": "慢富(SlowRich) 后端API服务 - Cloudflare Workers + Hono",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 execute SLOWRICH_DB --file=src/db/schema.sql",
+    "db:seed": "wrangler d1 execute SLOWRICH_DB --file=src/db/seed.sql",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.4.0",
+    "hono.cloudflare-workers": "^0.1.0",
+    "@cloudflare/workers-types": "^4.20240529.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "wrangler": "^3.60.0",
+    "@types/bcryptjs": "^2.4.6"
+  }
+}

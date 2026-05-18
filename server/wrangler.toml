@@ -1,0 +1,53 @@
+#:/configuration:file
+name = "slowerich-backend"
+main = "src/index.ts"
+compatibility_date = "2024-05-29"
+compatibility_flags = ["nodejs_compat"]
+
+# ============================================
+# D1 Database
+# ============================================
+[[d1_databases]]
+binding = "DB"
+database_name = "slowerich-db"
+database_id = "SLOWRICH_DB_ID"
+
+# ============================================
+# Queue - 回测分片计算队列
+# ============================================
+[[queues.producers]]
+queue = "backtest-queue"
+binding = "BACKTEST_QUEUE"
+
+[[queues.consumers]]
+queue = "backtest-queue"
+max_batch_size = 1
+max_batch_timeout = 30
+max_retries = 3
+retry_delay = 5
+
+# ============================================
+# Cron Triggers - 市场温度抓取
+# ============================================
+[triggers]
+crons = ["30 15 * * 1-5"]
+
+# ============================================
+# Environment Variables
+# ============================================
+[vars]
+ENVIRONMENT = "production"
+JWT_SECRET = ""             # Use: wrangler secret put JWT_SECRET
+REFRESH_TOKEN_SECRET = ""   # Use: wrangler secret put REFRESH_TOKEN_SECRET
+TUSHARE_TOKEN = ""          # Use: wrangler secret put TUSHARE_TOKEN
+CSRF_SECRET = ""            # Use: wrangler secret put CSRF_SECRET
+FRONTEND_URL = "https://slowerich.pages.dev"
+
+# ============================================
+# Dev overrides
+# ============================================
+[env.dev]
+name = "slowerich-backend-dev"
+[env.dev.vars]
+ENVIRONMENT = "development"
+FRONTEND_URL = "http://localhost:5173"
