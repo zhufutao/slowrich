@@ -10,7 +10,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "slowerich-db"
-database_id = "SLOWRICH_DB_ID"
+database_id = "23970c3e-e48d-48d9-8293-3cf0e780e328"
 
 # ============================================
 # Queue - 回测分片计算队列

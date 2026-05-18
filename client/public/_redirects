@@ -1,2 +1,2 @@
-/* /_redirects - Cloudflare Pages SPA routing */
+/api/v1/*  https://slowerich-backend.zft15.workers.dev/api/v1/:splat  200
 /* /index.html 200
